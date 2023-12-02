@@ -12,6 +12,9 @@ import {
 } from "react";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import AppContext from "@/hooks/appContext";
+import Markdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const convertQuestionToChatName = (question: string) =>
   question.split(" ").slice(0, 3).join(" ");
@@ -134,7 +137,30 @@ export default function Chat() {
               <h3 className="mb-2 font-bold">
                 {message.role === "user" ? "You" : "ChatGPT"}
               </h3>
-              <p>{message.content}</p>
+              <Markdown
+                components={{
+                  code(props) {
+                    const { ref, children, className, node, ...rest } = props;
+                    const match = /language-(\w+)/.exec(className || "");
+                    return match ? (
+                      <SyntaxHighlighter
+                        // eslint-disable-next-line react/no-children-prop
+                        children={String(children).replace(/\n$/, "")}
+                        {...rest}
+                        PreTag="div"
+                        language={match[1]}
+                        style={oneDark}
+                      />
+                    ) : (
+                      <code {...{ ...rest, ref }} className={className}>
+                        {children}
+                      </code>
+                    );
+                  },
+                }}
+              >
+                {message.content}
+              </Markdown>
             </div>
           ))}
         </ScrollArea>
