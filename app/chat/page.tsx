@@ -23,7 +23,12 @@ const convertQuestionToChatName = (question: string) =>
 export default function Chat() {
   const [userContent, setUserContent] = useState("");
   const { state, dispatch } = useContext(AppContext);
-  const { allChats, activeChatId = "", selectedModel } = state || {};
+  const {
+    allChats,
+    activeChatId = "",
+    selectedModel,
+    openAIClient,
+  } = state || {};
   const messages = allChats?.[activeChatId]?.messages;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -71,17 +76,19 @@ export default function Chat() {
 
   useEffect(() => {
     const fetchChat = async () => {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ messages, model: selectedModel }),
-      });
-      const json = await response.json();
-      const newMessage: ChatCompletionMessageParam = json.newMessage;
-      if (dispatch && messages?.length) {
-        dispatch({
-          type: "SET_ACTIVE_CHAT",
-          payload: { messages: [...messages, newMessage] },
+      if (openAIClient && selectedModel && messages?.length) {
+        const openAIResponse = await openAIClient.chat.completions.create({
+          messages,
+          model: selectedModel,
         });
+        const newMessage: ChatCompletionMessageParam =
+          openAIResponse.choices[0].message;
+        if (dispatch && messages?.length) {
+          dispatch({
+            type: "SET_ACTIVE_CHAT",
+            payload: { messages: [...messages, newMessage] },
+          });
+        }
       }
     };
 
@@ -113,7 +120,7 @@ export default function Chat() {
   });
 
   return (
-    <div className="bg-slate-900 flex-grow w-full h-screen">
+    <div className="flex-grow w-full h-screen">
       <div className="h-16 w-full grid items-center relative">
         <ModelSelector className="absolute top-3 left-3" />
         <h1 className="text-center">Chat</h1>

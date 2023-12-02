@@ -4,16 +4,21 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { useEffect, useLayoutEffect, useReducer } from "react";
 import { Sidebar } from "@/components/sidebar";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AppContext from "@/hooks/appContext";
 import { Action, GlobalState } from "@/types";
+import OpenAI from "openai";
+import { AlertCircle } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
-const initialState = {
+
+const initialState: GlobalState = {
   allChats: {},
   models: ["gpt-3.5-turbo-1106", "gpt-4-1106-preview"],
   activeChatId: "",
   localSyncStatus: "STALE",
   selectedModel: "gpt-3.5-turbo-1106",
+  openAIClient: null,
 };
 
 export default function RootLayout({
@@ -58,6 +63,17 @@ export default function RootLayout({
             ...state,
             selectedModel: action.payload?.selectedModel,
           };
+        case "SET_OPENAI_CLIENT":
+          return {
+            ...state,
+            openAIClient: action.payload?.openAIClient,
+          };
+        case "SET_NEW_CHAT":
+          return {
+            ...state,
+            activeChatId: initialState.activeChatId,
+            selectedModel: initialState.selectedModel,
+          };
       }
       return state;
     },
@@ -66,12 +82,28 @@ export default function RootLayout({
 
   useLayoutEffect(() => {
     const allChatsString = localStorage?.getItem("allChats");
+    const apiKey = localStorage.getItem("OPEN_AI_KEY");
+    let openAIClient = null;
+
+    if (apiKey) {
+      openAIClient = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+      });
+    }
 
     if (dispatch) {
       if (allChatsString) {
         dispatch({
           type: "SET_ALL_CHATS",
           payload: { allChats: JSON.parse(allChatsString) },
+        });
+      }
+
+      if (openAIClient) {
+        dispatch({
+          type: "SET_OPENAI_CLIENT",
+          payload: { openAIClient },
         });
       }
 
@@ -94,7 +126,22 @@ export default function RootLayout({
         <AppContext.Provider value={{ state, dispatch }}>
           <div className="flex min-h-screen w-full">
             <Sidebar />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow bg-slate-900">
+              {state?.openAIClient ? (
+                children
+              ) : (
+                <div className="grid place-items-center h-full w-full ">
+                  <Alert className="max-w-xl">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                      Please put your Open AI key to localStorage under
+                      &quot;OPEN_AI_KEY&quot;
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </main>
           </div>
         </AppContext.Provider>
       </body>

@@ -1,3 +1,5 @@
+import OpenAI from "openai";
+
 export interface AllChats {
   [name: string]: {
     messages: ChatCompletionMessageParam[];
@@ -16,4 +18,5 @@ export interface GlobalState {
   activeChatId: string;
   localSyncStatus: string;
   selectedModel: string;
+  openAIClient: OpenAI | null;
 }

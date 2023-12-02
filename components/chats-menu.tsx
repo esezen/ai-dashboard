@@ -9,7 +9,14 @@ export function ChatsMenu() {
   const { activeChatId, allChats = {} } = state || {};
   const handleChatClick = (key: string) => {
     if (dispatch) {
-      dispatch({ type: "SET_ACTIVE_CHAT_ID", payload: { activeChatId: key } });
+      if (key !== "new chat") {
+        dispatch({
+          type: "SET_ACTIVE_CHAT_ID",
+          payload: { activeChatId: key },
+        });
+      } else {
+        dispatch({ type: "SET_NEW_CHAT" });
+      }
     }
   };
 
@@ -30,6 +37,12 @@ export function ChatsMenu() {
               {key}
             </Button>
           ))}
+          <Button
+            onClick={() => handleChatClick("new chat")}
+            className="w-full justify-start"
+          >
+            {"New chat"}
+          </Button>
         </div>
       </div>
     </div>
