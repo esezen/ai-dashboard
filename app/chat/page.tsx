@@ -42,7 +42,7 @@ export default function Chat() {
           payload: { messages: [...messages, newMessage] },
         });
       } else {
-        const chatId = crypto?.randomUUID();
+        const chatId = "123";
 
         newAllChats = {
           ...allChats,
