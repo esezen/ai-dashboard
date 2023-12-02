@@ -101,10 +101,14 @@ export default function RootLayout({
     console.log(apiKey);
 
     if (apiKey) {
-      openAIClient = new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true,
-      });
+      try {
+        openAIClient = new OpenAI({
+          apiKey: apiKey,
+          dangerouslyAllowBrowser: true,
+        });
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     if (dispatch) {
