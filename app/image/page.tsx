@@ -1,5 +1,3 @@
 export default function Image() {
-  return (
-      <div>Image</div>
-  )
+  return <div>Image</div>;
 }
