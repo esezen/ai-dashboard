@@ -74,6 +74,20 @@ export default function RootLayout({
             activeChatId: initialState.activeChatId,
             selectedModel: initialState.selectedModel,
           };
+        case "REMOVE_CHAT":
+          const chatId = action.payload?.chatId;
+          const isDeletingCurrent = state.activeChatId === chatId;
+          const { [chatId]: chatToDelete, ...rest } = state.allChats;
+          const newState = {
+            ...state,
+            allChats: { ...rest },
+          };
+
+          if (isDeletingCurrent) {
+            newState.activeChatId = initialState.activeChatId;
+          }
+
+          return newState;
       }
       return state;
     },

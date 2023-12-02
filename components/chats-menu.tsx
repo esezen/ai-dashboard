@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import AppContext from "@/hooks/appContext";
+import { Trash2 } from "lucide-react";
 import { useContext } from "react";
 
 export function ChatsMenu() {
@@ -20,6 +21,15 @@ export function ChatsMenu() {
     }
   };
 
+  const handleRemoveClick = (key: string) => {
+    if (dispatch) {
+      dispatch({
+        type: "REMOVE_CHAT",
+        payload: { chatId: key },
+      });
+    }
+  };
+
   return (
     <div className="space-y-4 py-4">
       <div className="px-3 py-2">
@@ -28,14 +38,22 @@ export function ChatsMenu() {
         </h2>
         <div className="space-y-1">
           {Object.keys(allChats).map((key) => (
-            <Button
-              key={key}
-              onClick={() => handleChatClick(key)}
-              variant={`${activeChatId === key ? "secondary" : "ghost"}`}
-              className="w-full justify-start"
-            >
-              {key}
-            </Button>
+            <div className="flex" key={key}>
+              <Button
+                onClick={() => handleChatClick(key)}
+                variant={`${activeChatId === key ? "secondary" : "ghost"}`}
+                className="w-full justify-start truncate mr-3"
+              >
+                {key}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleRemoveClick(key)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           ))}
           <Button
             onClick={() => handleChatClick("new chat")}
