@@ -17,9 +17,6 @@ import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const convertQuestionToChatName = (question: string) =>
-  question.split(" ").slice(0, 3).join(" ");
-
 export default function Chat() {
   const [userContent, setUserContent] = useState("");
   const { state, dispatch } = useContext(AppContext);
@@ -45,7 +42,7 @@ export default function Chat() {
           payload: { messages: [...messages, newMessage] },
         });
       } else {
-        const chatId = convertQuestionToChatName(userContent);
+        const chatId = crypto.randomUUID();
 
         newAllChats = {
           ...allChats,

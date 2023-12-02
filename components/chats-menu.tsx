@@ -37,14 +37,14 @@ export function ChatsMenu() {
           Chats
         </h2>
         <div className="space-y-1">
-          {Object.keys(allChats).map((key) => (
+          {Object.entries(allChats).map(([key, value]) => (
             <div className="flex" key={key}>
               <Button
                 onClick={() => handleChatClick(key)}
                 variant={`${activeChatId === key ? "secondary" : "ghost"}`}
                 className="w-full justify-start truncate mr-3"
               >
-                {key}
+                {value.messages[0].content}
               </Button>
               <Button
                 variant="ghost"
@@ -55,13 +55,13 @@ export function ChatsMenu() {
               </Button>
             </div>
           ))}
-          <Button
-            onClick={() => handleChatClick("new chat")}
-            className="w-full justify-start"
-          >
-            {"New chat"}
-          </Button>
         </div>
+        <Button
+          onClick={() => handleChatClick("new chat")}
+          className="w-full justify-start mt-4"
+        >
+          {"New chat"}
+        </Button>
       </div>
     </div>
   );
