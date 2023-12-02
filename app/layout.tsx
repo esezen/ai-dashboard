@@ -7,7 +7,7 @@ import { Sidebar } from "@/components/sidebar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AppContext from "@/hooks/appContext";
 import { Action, GlobalState } from "@/types";
-// import OpenAI from "openai";
+import OpenAI from "openai";
 import { AlertCircle } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -96,15 +96,16 @@ export default function RootLayout({
 
   useLayoutEffect(() => {
     const allChatsString = localStorage?.getItem("allChats");
-    const apiKey = localStorage.getItem("OPEN_AI_KEY");
+    const apiKey = localStorage?.getItem("OPEN_AI_KEY");
     let openAIClient = null;
+    console.log(apiKey);
 
-    // if (apiKey) {
-    //   openAIClient = new OpenAI({
-    //     apiKey: apiKey,
-    //     dangerouslyAllowBrowser: true,
-    //   });
-    // }
+    if (apiKey) {
+      openAIClient = new OpenAI({
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+      });
+    }
 
     if (dispatch) {
       if (allChatsString) {
