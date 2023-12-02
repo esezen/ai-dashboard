@@ -13,6 +13,7 @@ const initialState = {
   models: ["gpt-3.5-turbo-1106", "gpt-4-1106-preview"],
   activeChatId: "",
   localSyncStatus: "STALE",
+  selectedModel: "gpt-3.5-turbo-1106",
 };
 
 export default function RootLayout({
@@ -45,11 +46,17 @@ export default function RootLayout({
           return {
             ...state,
             activeChatId: action.payload?.activeChatId,
+            selectedModel: state.allChats[action.payload?.activeChatId].model,
           };
         case "SET_LOCAL_SYNC_STATUS":
           return {
             ...state,
             localSyncStatus: action.payload?.localSyncStatus,
+          };
+        case "SET_SELECTED_MODEL":
+          return {
+            ...state,
+            selectedModel: action.payload?.selectedModel,
           };
       }
       return state;

@@ -15,4 +15,5 @@ export interface GlobalState {
   models: string[];
   activeChatId: string;
   localSyncStatus: string;
+  selectedModel: string;
 }

@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 import Link from "next/link";
-import { ChatsMenu } from "./chatsMenu";
+import { ChatsMenu } from "./chats-menu";
 
 interface Product {
   name: string;

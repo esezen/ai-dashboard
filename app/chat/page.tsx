@@ -1,6 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ModelSelector } from "@/components/model-selector";
 import {
   ChangeEvent,
   KeyboardEvent,
@@ -22,7 +23,7 @@ const convertQuestionToChatName = (question: string) =>
 export default function Chat() {
   const [userContent, setUserContent] = useState("");
   const { state, dispatch } = useContext(AppContext);
-  const { allChats, activeChatId = "" } = state || {};
+  const { allChats, activeChatId = "", selectedModel } = state || {};
   const messages = allChats?.[activeChatId]?.messages;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -45,7 +46,7 @@ export default function Chat() {
           ...allChats,
           [chatId]: {
             messages: [newMessage],
-            model: "gpt-3.5-turbo",
+            model: selectedModel,
           },
         };
         dispatch({
@@ -72,7 +73,7 @@ export default function Chat() {
     const fetchChat = async () => {
       const response = await fetch("/api/chat", {
         method: "POST",
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages, model: selectedModel }),
       });
       const json = await response.json();
       const newMessage: ChatCompletionMessageParam = json.newMessage;
@@ -113,7 +114,8 @@ export default function Chat() {
 
   return (
     <div className="bg-slate-900 flex-grow w-full h-screen">
-      <div className="h-16 w-full grid items-center">
+      <div className="h-16 w-full grid items-center relative">
+        <ModelSelector className="absolute top-3 left-3" />
         <h1 className="text-center">Chat</h1>
       </div>
       <div className="w-full flex flex-col-reverse p-10 h-[calc(100%-4rem)]">
