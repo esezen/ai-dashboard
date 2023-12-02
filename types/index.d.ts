@@ -18,5 +18,5 @@ export interface GlobalState {
   activeChatId: string;
   localSyncStatus: string;
   selectedModel: string;
-  openAIClient: OpenAI | null;
+  apiKey: string;
 }

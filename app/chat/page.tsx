@@ -20,12 +20,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 export default function Chat() {
   const [userContent, setUserContent] = useState("");
   const { state, dispatch } = useContext(AppContext);
-  const {
-    allChats,
-    activeChatId = "",
-    selectedModel,
-    openAIClient,
-  } = state || {};
+  const { allChats, activeChatId = "", selectedModel, apiKey } = state || {};
   const messages = allChats?.[activeChatId]?.messages;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -42,7 +37,7 @@ export default function Chat() {
           payload: { messages: [...messages, newMessage] },
         });
       } else {
-        const chatId = "123";
+        const chatId = crypto.randomUUID();
 
         newAllChats = {
           ...allChats,
@@ -73,13 +68,21 @@ export default function Chat() {
 
   useEffect(() => {
     const fetchChat = async () => {
-      if (openAIClient && selectedModel && messages?.length) {
-        const openAIResponse = await openAIClient.chat.completions.create({
-          messages,
-          model: selectedModel,
-        });
-        const newMessage: ChatCompletionMessageParam =
-          openAIResponse.choices[0].message;
+      if (apiKey && selectedModel && messages?.length) {
+        const response = await fetch(
+          "https://api.openai.com/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ model: selectedModel, messages }),
+          },
+        );
+        const json = await response.json();
+
+        const newMessage: ChatCompletionMessageParam = json.choices[0].message;
         if (dispatch && messages?.length) {
           dispatch({
             type: "SET_ACTIVE_CHAT",

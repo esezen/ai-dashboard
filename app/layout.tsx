@@ -7,7 +7,6 @@ import { Sidebar } from "@/components/sidebar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AppContext from "@/hooks/appContext";
 import { Action, GlobalState } from "@/types";
-import OpenAI from "openai";
 import { AlertCircle } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,7 +17,7 @@ const initialState: GlobalState = {
   activeChatId: "",
   localSyncStatus: "STALE",
   selectedModel: "gpt-3.5-turbo-1106",
-  openAIClient: null,
+  apiKey: "",
 };
 
 export default function RootLayout({
@@ -63,10 +62,10 @@ export default function RootLayout({
             ...state,
             selectedModel: action.payload?.selectedModel,
           };
-        case "SET_OPENAI_CLIENT":
+        case "SET_OPENAI_KEY":
           return {
             ...state,
-            openAIClient: action.payload?.openAIClient,
+            apiKey: action.payload?.apiKey,
           };
         case "SET_NEW_CHAT":
           return {
@@ -97,19 +96,6 @@ export default function RootLayout({
   useLayoutEffect(() => {
     const allChatsString = localStorage?.getItem("allChats");
     const apiKey = localStorage?.getItem("OPEN_AI_KEY");
-    let openAIClient = null;
-    console.log(apiKey);
-
-    if (apiKey) {
-      try {
-        openAIClient = new OpenAI({
-          apiKey: apiKey,
-          dangerouslyAllowBrowser: true,
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    }
 
     if (dispatch) {
       if (allChatsString) {
@@ -119,10 +105,10 @@ export default function RootLayout({
         });
       }
 
-      if (openAIClient) {
+      if (apiKey) {
         dispatch({
-          type: "SET_OPENAI_CLIENT",
-          payload: { openAIClient },
+          type: "SET_OPENAI_KEY",
+          payload: { apiKey },
         });
       }
 
@@ -146,7 +132,7 @@ export default function RootLayout({
           <div className="flex min-h-screen w-full">
             <Sidebar />
             <main className="flex-grow bg-slate-900">
-              {state?.openAIClient ? (
+              {state?.apiKey ? (
                 children
               ) : (
                 <div className="grid place-items-center h-full w-full ">
