@@ -1,5 +1,5 @@
 "use client";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ModelSelector } from "@/components/model-selector";
 import {
@@ -23,8 +23,10 @@ export default function Chat() {
   const { allChats, activeChatId = "", selectedModel, apiKey } = state || {};
   const messages = allChats?.[activeChatId]?.messages;
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && dispatch) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey && dispatch) {
+      event.preventDefault();
+
       const newMessage: ChatCompletionMessageParam = {
         role: "user",
         content: userContent,
@@ -60,7 +62,7 @@ export default function Chat() {
     }
   };
 
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target) {
       setUserContent(event.target?.value);
     }
@@ -127,9 +129,9 @@ export default function Chat() {
       </div>
       <div className="w-full flex flex-col-reverse p-10 h-[calc(100%-4rem)]">
         <div className="mx-auto w-2/4">
-          <Input
+          <Textarea
             placeholder="Your question"
-            className="w-full h-12"
+            className="w-full h-12 resize-none"
             value={userContent}
             onKeyDown={handleKeyDown}
             onChange={handleOnChange}
@@ -168,7 +170,7 @@ export default function Chat() {
                   },
                 }}
               >
-                {message.content}
+                {message.content.replace("\n", "\n\n")}
               </Markdown>
             </div>
           ))}
