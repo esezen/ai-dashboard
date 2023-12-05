@@ -20,7 +20,13 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 export default function Chat() {
   const [userContent, setUserContent] = useState("");
   const { state, dispatch } = useContext(AppContext);
-  const { allChats, activeChatId = "", selectedModel, apiKey } = state || {};
+  const {
+    allChats,
+    activeChatId = "",
+    selectedModel,
+    apiKey,
+    apiStatus,
+  } = state || {};
   const messages = allChats?.[activeChatId]?.messages;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -70,7 +76,9 @@ export default function Chat() {
 
   useEffect(() => {
     const fetchChat = async () => {
-      if (apiKey && selectedModel && messages?.length) {
+      if (apiKey && selectedModel && messages?.length && dispatch) {
+        dispatch({ type: "SET_API_PENDING" });
+
         const response = await fetch(
           "https://api.openai.com/v1/chat/completions",
           {
@@ -85,11 +93,12 @@ export default function Chat() {
         const json = await response.json();
 
         const newMessage: ChatCompletionMessageParam = json.choices[0].message;
-        if (dispatch && messages?.length) {
+        if (messages?.length) {
           dispatch({
             type: "SET_ACTIVE_CHAT",
             payload: { messages: [...messages, newMessage] },
           });
+          dispatch({ type: "SET_API_RESOLVED" });
         }
       }
     };
@@ -129,12 +138,14 @@ export default function Chat() {
       </div>
       <div className="w-full flex flex-col-reverse p-10 h-[calc(100%-4rem)]">
         <div className="mx-auto w-2/4">
+          {apiStatus === "PENDING" && <div className="spinner"></div>}
           <Textarea
             placeholder="Your question"
             className="w-full h-12 resize-none"
             value={userContent}
             onKeyDown={handleKeyDown}
             onChange={handleOnChange}
+            disabled={apiStatus === "PENDING"}
           />
         </div>
         <ScrollArea className="w-full mx-auto h-full mb-16" ref={scrollRef}>

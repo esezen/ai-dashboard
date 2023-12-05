@@ -19,4 +19,6 @@ export interface GlobalState {
   localSyncStatus: string;
   selectedModel: string;
   apiKey: string;
+  apiStatus: "IDLE" | "PENDING" | "RESOLVED" | "REJECTED";
+  error: string | null;
 }

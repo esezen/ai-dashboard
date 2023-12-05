@@ -18,6 +18,8 @@ const initialState: GlobalState = {
   localSyncStatus: "STALE",
   selectedModel: "gpt-3.5-turbo-1106",
   apiKey: "",
+  apiStatus: "IDLE",
+  error: null,
 };
 
 export default function RootLayout({
@@ -87,6 +89,22 @@ export default function RootLayout({
           }
 
           return newState;
+        case "SET_API_PENDING":
+          return {
+            ...state,
+            apiStatus: "PENDING",
+          };
+        case "SET_API_RESOLVED":
+          return {
+            ...state,
+            apiStatus: "RESOLVED",
+          };
+        case "SET_API_REJECTED":
+          return {
+            ...state,
+            apiStatus: "REJECTED",
+            error: action.payload?.error,
+          };
       }
       return state;
     },
