@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 import Link from "next/link";
 import { ChatsMenu } from "./chats-menu";
+import { ImagesMenu } from "./images-menu";
 
 interface Product {
   name: string;
@@ -53,6 +54,7 @@ export function Sidebar() {
         </div>
       </div>
       {pathname === "/chat" && <ChatsMenu />}
+      {pathname === "/image" && <ImagesMenu />}
     </div>
   );
 }

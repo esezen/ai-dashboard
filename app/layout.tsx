@@ -13,8 +13,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 const initialState: GlobalState = {
   allChats: {},
+  allImages: {},
   models: ["gpt-3.5-turbo-1106", "gpt-4-1106-preview"],
   activeChatId: "",
+  activeImageId: "",
   localSyncStatus: "STALE",
   selectedModel: "gpt-3.5-turbo-1106",
   apiKey: "",
@@ -54,6 +56,31 @@ export default function RootLayout({
             activeChatId: action.payload?.activeChatId,
             selectedModel: state.allChats[action.payload?.activeChatId].model,
           };
+        case "SET_ACTIVE_IMAGE":
+          const { allImages: allImagesOld, activeImageId: activeImageIdOld } =
+            state;
+
+          return {
+            ...state,
+            allImages: {
+              ...allImagesOld,
+              [activeImageIdOld]: {
+                prompt: action.payload?.prompt,
+                revisedPrompt: action.payload?.revisedPrompt,
+                base64: action.payload?.base64,
+              },
+            },
+          };
+        case "SET_ALL_IMAGES":
+          return {
+            ...state,
+            allImages: action.payload?.allImages,
+          };
+        case "SET_ACTIVE_IMAGE_ID":
+          return {
+            ...state,
+            activeImageId: action.payload?.activeImageId,
+          };
         case "SET_LOCAL_SYNC_STATUS":
           return {
             ...state,
@@ -77,18 +104,38 @@ export default function RootLayout({
           };
         case "REMOVE_CHAT":
           const chatId = action.payload?.chatId;
-          const isDeletingCurrent = state.activeChatId === chatId;
-          const { [chatId]: chatToDelete, ...rest } = state.allChats;
-          const newState = {
+          const isDeletingCurrentChat = state.activeChatId === chatId;
+          const { [chatId]: chatToDelete, ...restAllChats } = state.allChats;
+          const newStateWithRemovedChat = {
             ...state,
-            allChats: { ...rest },
+            allChats: { ...restAllChats },
           };
 
-          if (isDeletingCurrent) {
-            newState.activeChatId = initialState.activeChatId;
+          if (isDeletingCurrentChat) {
+            newStateWithRemovedChat.activeChatId = initialState.activeChatId;
           }
 
-          return newState;
+          return newStateWithRemovedChat;
+        case "SET_NEW_IMAGE":
+          return {
+            ...state,
+            activeImageId: initialState.activeImageId,
+          };
+        case "REMOVE_IMAGE":
+          const imageId = action.payload?.imageId;
+          const isDeletingCurrentImage = state.activeImageId === imageId;
+          const { [imageId]: imageToDelete, ...restAllImages } =
+            state.allImages;
+          const newStateWithRemovedImage = {
+            ...state,
+            allImages: { ...restAllImages },
+          };
+
+          if (isDeletingCurrentImage) {
+            newStateWithRemovedImage.activeImageId = initialState.activeImageId;
+          }
+
+          return newStateWithRemovedImage;
         case "SET_API_PENDING":
           return {
             ...state,
@@ -113,6 +160,7 @@ export default function RootLayout({
 
   useLayoutEffect(() => {
     const allChatsString = localStorage?.getItem("allChats");
+    const allImagesString = localStorage?.getItem("allImages");
     const apiKey = localStorage?.getItem("OPEN_AI_KEY");
 
     if (dispatch) {
@@ -120,6 +168,13 @@ export default function RootLayout({
         dispatch({
           type: "SET_ALL_CHATS",
           payload: { allChats: JSON.parse(allChatsString) },
+        });
+      }
+
+      if (allImagesString) {
+        dispatch({
+          type: "SET_ALL_IMAGES",
+          payload: { allImages: JSON.parse(allImagesString) },
         });
       }
 
@@ -142,6 +197,12 @@ export default function RootLayout({
       localStorage?.setItem("allChats", JSON.stringify(state.allChats));
     }
   }, [state, state.allChats, state.localSyncStatus]);
+
+  useEffect(() => {
+    if (state && state.localSyncStatus === "UPDATED") {
+      localStorage?.setItem("allImages", JSON.stringify(state.allImages));
+    }
+  }, [state, state.localSyncStatus, state.allImages]);
 
   return (
     <html lang="en">

@@ -7,6 +7,14 @@ export interface AllChats {
   };
 }
 
+export interface AllImages {
+  [name: string]: {
+    prompt: string;
+    base64?: string;
+    revisedPrompt?: string;
+  };
+}
+
 export interface Action {
   type: string;
   payload?: { [key: string]: any };
@@ -14,8 +22,10 @@ export interface Action {
 
 export interface GlobalState {
   allChats: AllChats;
+  allImages: AllImages;
   models: string[];
   activeChatId: string;
+  activeImageId: string;
   localSyncStatus: string;
   selectedModel: string;
   apiKey: string;
