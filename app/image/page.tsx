@@ -112,10 +112,10 @@ export default function Image() {
             disabled={apiStatus === "PENDING"}
           />
         ) : (
-          <div className="">
+          <div className="max-w-4xl mx-auto flex flex-col justify-center">
             <img src={`data:image/png;base64,${base64}`} alt="" />
             <p className="my-4">Prompt: {prompt}</p>
-            <p>Revised Prompt: {revisedPrompt}</p>
+            <p className="">Revised Prompt: {revisedPrompt}</p>
           </div>
         )}
         {apiStatus === "PENDING" && <div className="spinner"></div>}
