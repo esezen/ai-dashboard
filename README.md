@@ -36,14 +36,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Thing I'm planning to do
 
-- Clean up the code
-  - The reducer logic is especially bad
-- Authentication using Supabase
-- Save things to an actual database
-  - I currently same images to localStorage which hits the quota after a few images
-- Maybe move the Open AI calls to a Lambda. (Vercel doesn't allow functions to run longer than 10 seconds on free tier)
-- Connect to a locally running modal (Ollama)
-- Import / export from localStorage
-- Stable diffusion support for images
-- Upload PDF
-- Upload image
+[ ] Clean up the code
+  [ ] The reducer logic is especially bad
+[ ] Authentication using Supabase
+[ ] Save things to an actual database
+  [ ] I currently same images to localStorage which hits the quota after a few images
+[ ] Maybe move the Open AI calls to a Lambda. (Vercel doesn't allow functions to run longer than 10 seconds on free tier)
+[ ] Connect to a locally running modal (Ollama)
+[ ] Import / export from localStorage
+[ ] Stable diffusion support for images
+[ ] Upload PDF
+[ ] Upload image
