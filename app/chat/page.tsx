@@ -16,6 +16,7 @@ import AppContext from "@/hooks/appContext";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { processStream } from "@/lib/utils";
 
 export default function Chat() {
   const [userContent, setUserContent] = useState("");
@@ -87,18 +88,37 @@ export default function Chat() {
               Authorization: `Bearer ${apiKey}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ model: selectedModel, messages }),
+            body: JSON.stringify({
+              model: selectedModel,
+              messages,
+              stream: true,
+            }),
           },
         );
-        const json = await response.json();
 
-        const newMessage: ChatCompletionMessageParam = json.choices[0].message;
-        if (messages?.length) {
-          dispatch({
-            type: "SET_ACTIVE_CHAT",
-            payload: { messages: [...messages, newMessage] },
-          });
-          dispatch({ type: "SET_API_RESOLVED" });
+        if (response.ok && response.body) {
+          const reader = response.body.getReader();
+          let completeResponse = "";
+
+          processStream(
+            reader,
+            (partialMessage: string) => {
+              completeResponse += partialMessage;
+
+              dispatch({
+                type: "SET_ACTIVE_CHAT",
+                payload: {
+                  messages: [
+                    ...messages,
+                    { role: "assistant", content: completeResponse },
+                  ],
+                },
+              });
+            },
+            () => {
+              dispatch({ type: "SET_API_RESOLVED" });
+            },
+          );
         }
       }
     };
