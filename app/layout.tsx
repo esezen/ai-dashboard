@@ -18,7 +18,7 @@ const initialState: GlobalState = {
   activeChatId: "",
   activeImageId: "",
   localSyncStatus: "STALE",
-  selectedModel: "gpt-3.5-turbo-1106",
+  selectedModel: "gpt-4-1106-preview",
   apiKey: "",
   apiStatus: "IDLE",
   error: null,
