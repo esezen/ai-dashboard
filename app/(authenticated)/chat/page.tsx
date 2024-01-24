@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import AppContext from "@/hooks/appContext";
+import AppContext from "@/components/app-context";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";

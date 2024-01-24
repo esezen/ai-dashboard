@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import * as z from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,3 +33,8 @@ export async function processStream(
   chunkCallback(parsedResponse);
   processStream(reader, chunkCallback, streamFinishedCallback);
 }
+
+export const authFormSchema = z.object({
+  email: z.string().min(5).max(50),
+  password: z.string().min(8).max(50),
+});

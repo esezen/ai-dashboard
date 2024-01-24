@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import AppContext from "@/hooks/appContext";
+import AppContext from "@/components/app-context";
 import { Trash2 } from "lucide-react";
 import { useContext } from "react";
 

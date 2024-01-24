@@ -1,7 +1,7 @@
 "use client";
 import { useDropzone } from "react-dropzone";
 import { useContext, useEffect, useState } from "react";
-import AppContext from "@/hooks/appContext";
+import AppContext from "@/components/app-context";
 import { Button } from "@/components/ui/button";
 
 export default function Transcribe() {

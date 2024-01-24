@@ -5,4 +5,5 @@ interface C {
   state: GlobalState | null;
   dispatch: React.Dispatch<Action> | null;
 }
+
 export default createContext<C>({ state: null, dispatch: null });

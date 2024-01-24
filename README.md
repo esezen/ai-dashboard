@@ -9,7 +9,6 @@ The normal ChatGPT like interface. Let's you use GPT4
 
 ![Chat](./readmeImages/chat.png)
 
-
 ## Image
 
 Prompt to image
@@ -17,6 +16,7 @@ Prompt to image
 ![Image](./readmeImages/image.png)
 
 ## Transcribe
+
 Audio file to text. I thought this might be useful for converting voice memos to notes
 
 ![Transcribe](./readmeImages/transcribe.png)
@@ -38,7 +38,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - [ ] Clean up the code
   - [ ] The reducer logic is especially bad
-- [ ] Authentication using Supabase
+- [x] Authentication using Supabase
+  - [ ] Update other parts to use data from DB instead of localStorage
 - [ ] Save things to an actual database
   - [ ] I currently same images to localStorage which hits the quota after a few images
 - [ ] Maybe move the Open AI calls to a Lambda. (Vercel doesn't allow functions to run longer than 10 seconds on free tier)
