@@ -32,3 +32,5 @@ export interface GlobalState {
   apiStatus: "IDLE" | "PENDING" | "RESOLVED" | "REJECTED";
   error: string | null;
 }
+
+export type AuthFormType = z.infer<typeof authFormSchema>;

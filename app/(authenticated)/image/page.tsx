@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import AppContext from "@/hooks/appContext";
+import AppContext from "@/components/app-context";
 
 export default function Image() {
   const [userContent, setUserContent] = useState("");

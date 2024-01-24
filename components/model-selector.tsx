@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AppContext from "@/hooks/appContext";
+import AppContext from "@/components/app-context";
 import { useContext } from "react";
 
 export function ModelSelector({ className }: { className: string }) {
