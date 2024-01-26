@@ -12,7 +12,7 @@ import { Session } from "@supabase/supabase-js";
 const initialState: GlobalState = {
   allChats: {},
   allImages: {},
-  models: ["gpt-3.5-turbo-1106", "gpt-4-1106-preview"],
+  models: ["gpt-3.5-turbo-1106", "gpt-4-0125-preview"],
   activeChatId: "",
   activeImageId: "",
   localSyncStatus: "STALE",
