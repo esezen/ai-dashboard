@@ -90,7 +90,14 @@ export default function Chat() {
             },
             body: JSON.stringify({
               model: selectedModel,
-              messages,
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "You are a helpful assistant. Be clear and concise with your anwers. If you need clarification about a question, ask before giving a full answer. Do not give long explanations unless explicity asked.",
+                },
+                ...messages,
+              ],
               stream: true,
             }),
           },
