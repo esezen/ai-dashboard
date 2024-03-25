@@ -1,24 +1,26 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import AppContext from "@/components/app-context";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { useNewProjectStore } from "@/lib/zustand";
 
 export default function Image() {
+  const {
+    apiStatus,
+    apiKey,
+    allImages,
+    activeImageId,
+    setApiStatus,
+    setActiveImage,
+    setAllImages,
+    setActiveImageId,
+  } = useNewProjectStore();
   const [userContent, setUserContent] = useState("");
-  const { state, dispatch } = useContext(AppContext);
-  const { allImages, activeImageId = "", apiKey, apiStatus } = state || {};
   const currentImage = allImages?.[activeImageId];
   const { prompt, base64, revisedPrompt } = currentImage || {};
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey && dispatch) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
 
       let newAllImages;
@@ -31,14 +33,8 @@ export default function Image() {
           prompt: userContent,
         },
       };
-      dispatch({
-        type: "SET_ALL_IMAGES",
-        payload: { allImages: newAllImages },
-      });
-      dispatch({
-        type: "SET_ACTIVE_IMAGE_ID",
-        payload: { activeImageId: imageId },
-      });
+      setAllImages(newAllImages);
+      setActiveImageId(imageId);
 
       setUserContent("");
     }
@@ -52,8 +48,8 @@ export default function Image() {
 
   useEffect(() => {
     const fetchChat = async () => {
-      if (apiKey && prompt && dispatch) {
-        dispatch({ type: "SET_API_PENDING" });
+      if (apiKey && prompt) {
+        setApiStatus("PENDING");
 
         const response = await fetch(
           "https://api.openai.com/v1/images/generations ",
@@ -79,16 +75,13 @@ export default function Image() {
           generatedImage;
 
         if (base64) {
-          dispatch({
-            type: "SET_ACTIVE_IMAGE",
-            payload: { prompt: prompt, base64, revisedPrompt },
-          });
-          dispatch({ type: "SET_API_RESOLVED" });
+          setActiveImage(prompt, revisedPrompt, base64);
+          setApiStatus("RESOLVED");
         }
       }
     };
 
-    if (activeImageId && allImages && dispatch && prompt && !base64) {
+    if (activeImageId && allImages && prompt && !base64) {
       console.log("Calling OpenAI");
       fetchChat();
     }

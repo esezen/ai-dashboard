@@ -1,33 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import AppContext from "@/components/app-context";
 import { Trash2 } from "lucide-react";
-import { useContext } from "react";
+import { useNewProjectStore } from "@/lib/zustand";
 
 export function ChatsMenu() {
-  const { state, dispatch } = useContext(AppContext);
-  const { activeChatId, allChats = {} } = state || {};
+  const { allChats, activeChatId, setActiveChatId, setNewChat, removeChat } =
+    useNewProjectStore();
   const handleChatClick = (key: string) => {
-    if (dispatch) {
-      if (key !== "new chat") {
-        dispatch({
-          type: "SET_ACTIVE_CHAT_ID",
-          payload: { activeChatId: key },
-        });
-      } else {
-        dispatch({ type: "SET_NEW_CHAT" });
-      }
+    if (key !== "new chat") {
+      setActiveChatId(key);
+    } else {
+      setNewChat();
     }
   };
 
   const handleRemoveClick = (key: string) => {
-    if (dispatch) {
-      dispatch({
-        type: "REMOVE_CHAT",
-        payload: { chatId: key },
-      });
-    }
+    removeChat(key);
   };
 
   return (

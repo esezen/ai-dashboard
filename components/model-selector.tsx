@@ -7,20 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AppContext from "@/components/app-context";
-import { useContext } from "react";
+import { useNewProjectStore } from "@/lib/zustand";
 
 export function ModelSelector({ className }: { className: string }) {
-  const { state, dispatch } = useContext(AppContext);
-  const { models, selectedModel } = state || {};
+  const { models, selectedModel, setSelectedModel } = useNewProjectStore();
 
   const handleOnChange = (value: string) => {
-    if (dispatch) {
-      dispatch({
-        type: "SET_SELECTED_MODEL",
-        payload: { selectedModel: value },
-      });
-    }
+    setSelectedModel(value);
   };
 
   return (

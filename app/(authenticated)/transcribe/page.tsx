@@ -1,14 +1,13 @@
 "use client";
 import { useDropzone } from "react-dropzone";
-import { useContext, useEffect, useState } from "react";
-import AppContext from "@/components/app-context";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useNewProjectStore } from "@/lib/zustand";
 
 export default function Transcribe() {
+  const { apiStatus, setApiStatus, apiKey } = useNewProjectStore();
   const [transcription, setTranscription] = useState("");
   const [acceptedFileName, setAcceptedFileName] = useState("");
-  const { state, dispatch } = useContext(AppContext);
-  const { apiKey, apiStatus } = state || {};
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     maxFiles: 1,
@@ -22,8 +21,8 @@ export default function Transcribe() {
 
   useEffect(() => {
     const fetchChat = async () => {
-      if (apiKey && firstFile && dispatch) {
-        dispatch({ type: "SET_API_PENDING" });
+      if (apiKey && firstFile) {
+        setApiStatus("PENDING");
 
         const formData = new FormData();
         formData.append("file", firstFile);
@@ -43,7 +42,7 @@ export default function Transcribe() {
         const json = await response.json();
         setTranscription(json?.text);
         setAcceptedFileName(firstFile.name.split(".").slice(0, -1).join("."));
-        dispatch({ type: "SET_API_RESOLVED" });
+        setApiStatus("RESOLVED");
       }
     };
 

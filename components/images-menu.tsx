@@ -1,34 +1,28 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import AppContext from "@/components/app-context";
 import { Trash2 } from "lucide-react";
-import { useContext } from "react";
+import { useNewProjectStore } from "@/lib/zustand";
 
 export function ImagesMenu() {
-  const { state, dispatch } = useContext(AppContext);
-  const { activeImageId, allImages = {} } = state || {};
+  const {
+    activeImageId,
+    allImages,
+    setActiveImageId,
+    setNewImage,
+    removeImage,
+  } = useNewProjectStore();
 
   const handleChatClick = (key: string) => {
-    if (dispatch) {
-      if (key !== "new image") {
-        dispatch({
-          type: "SET_ACTIVE_IMAGE_ID",
-          payload: { activeImageId: key },
-        });
-      } else {
-        dispatch({ type: "SET_NEW_IMAGE" });
-      }
+    if (key !== "new image") {
+      setActiveImageId(key);
+    } else {
+      setNewImage();
     }
   };
 
   const handleRemoveClick = (key: string) => {
-    if (dispatch) {
-      dispatch({
-        type: "REMOVE_IMAGE",
-        payload: { imageId: key },
-      });
-    }
+    removeImage(key);
   };
 
   return (

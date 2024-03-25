@@ -5,33 +5,35 @@ import { ModelSelector } from "@/components/model-selector";
 import {
   ChangeEvent,
   KeyboardEvent,
-  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from "react";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import AppContext from "@/components/app-context";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { processStream } from "@/lib/utils";
+import { useNewProjectStore } from "@/lib/zustand";
 
 export default function Chat() {
-  const [userContent, setUserContent] = useState("");
-  const { state, dispatch } = useContext(AppContext);
   const {
     allChats,
-    activeChatId = "",
+    activeChatId,
     selectedModel,
     apiKey,
     apiStatus,
-  } = state || {};
+    setAllChats,
+    setActiveChatId,
+    setActiveChat,
+    setApiStatus,
+  } = useNewProjectStore();
+  const [userContent, setUserContent] = useState("");
   const messages = allChats?.[activeChatId]?.messages;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey && dispatch) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
 
       const newMessage: ChatCompletionMessageParam = {
@@ -41,10 +43,7 @@ export default function Chat() {
       let newAllChats;
 
       if (messages && allChats) {
-        dispatch({
-          type: "SET_ACTIVE_CHAT",
-          payload: { messages: [...messages, newMessage] },
-        });
+        setActiveChat([...messages, newMessage]);
       } else {
         const chatId = crypto.randomUUID();
 
@@ -55,14 +54,9 @@ export default function Chat() {
             model: selectedModel,
           },
         };
-        dispatch({
-          type: "SET_ALL_CHATS",
-          payload: { allChats: newAllChats },
-        });
-        dispatch({
-          type: "SET_ACTIVE_CHAT_ID",
-          payload: { activeChatId: chatId },
-        });
+
+        setAllChats(newAllChats);
+        setActiveChatId(chatId);
       }
 
       setUserContent("");
@@ -77,8 +71,8 @@ export default function Chat() {
 
   useEffect(() => {
     const fetchChat = async () => {
-      if (apiKey && selectedModel && messages?.length && dispatch) {
-        dispatch({ type: "SET_API_PENDING" });
+      if (apiKey && selectedModel && messages?.length) {
+        setApiStatus("PENDING");
 
         const response = await fetch(
           "https://api.openai.com/v1/chat/completions",
@@ -111,19 +105,16 @@ export default function Chat() {
             reader,
             (partialMessage: string) => {
               completeResponse += partialMessage;
-
-              dispatch({
-                type: "SET_ACTIVE_CHAT",
-                payload: {
-                  messages: [
-                    ...messages,
-                    { role: "assistant", content: completeResponse },
-                  ],
+              setActiveChat([
+                ...messages,
+                {
+                  role: "assistant",
+                  content: completeResponse,
                 },
-              });
+              ]);
             },
             () => {
-              dispatch({ type: "SET_API_RESOLVED" });
+              setApiStatus("RESOLVED");
             },
           );
         }
@@ -133,7 +124,6 @@ export default function Chat() {
     if (
       activeChatId &&
       allChats &&
-      dispatch &&
       messages?.length &&
       messages.at(-1)?.role !== "assistant"
     ) {
