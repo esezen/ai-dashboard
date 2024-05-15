@@ -6,11 +6,11 @@ import { combine, devtools } from "zustand/middleware";
 const initialState = {
   allChats: {} as AllChats,
   allImages: {} as AllImages,
-  models: ["gpt-3.5-turbo-1106", "gpt-4-0125-preview"],
+  models: ["gpt-3.5-turbo-1106", "gpt-4-0125-preview", "gpt-4o"],
   activeChatId: "",
   activeImageId: "",
   localSyncStatus: "STALE",
-  selectedModel: "gpt-4-0125-preview",
+  selectedModel: "gpt-4o",
   apiKey: "",
   apiStatus: "IDLE",
   error: null,
